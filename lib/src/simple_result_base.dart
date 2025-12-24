@@ -32,7 +32,7 @@ sealed class Result<S extends Object, F> {
 
   /// O método mágico: obriga a tratar os dois casos.
   /// Ideal para usar nos Widgets/Blocs.
-  T fold<T extends Object>({
+  T fold<T extends Object?>({
     required T Function(S value) onSuccess,
     required T Function(F error) onFailure,
   }) {
