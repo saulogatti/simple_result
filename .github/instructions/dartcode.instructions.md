@@ -449,10 +449,8 @@ linter:
   UIs.
 * **Text:** Use `Theme.of(context).textTheme` for text styles.
 * **Text Fields:** Configure `textCapitalization`, `keyboardType`, and
-* **Responsiveness:** Use `LayoutBuilder` or `MediaQuery` to create responsive
-  UIs.
-* **Text:** Use `Theme.of(context).textTheme` for text styles.
-  remote images.
+  `inputFormatters` for better user experience and data validation.
+
 
 ```dart
 // When using network images, always provide an errorBuilder.

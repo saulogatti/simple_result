@@ -88,6 +88,11 @@ void main() {
 
       expect(value, equals(20));
     });
+    test('deve executar onFailure quando for Failure', () {
+      final result = Result<int, String>.failure('erro');
+      final value = result.when((v) => v * 2, (e) => -1);
+      expect(value, equals(-1));
+    });
   });
 
   group('getOrNull', () {
@@ -224,6 +229,13 @@ void main() {
           expect(result.failureOrNull, equals('Erro formatado: 404'));
         },
       );
+      test('deve permitir recuperar de um erro para um sucesso', () {
+        final result = Result<int, String>.failure(
+          'erro recuperável',
+        ).flatMapError((e) => Result.success(0));
+        expect(result.isSuccess, isTrue);
+        expect(result.getOrNull, equals(0));
+      });
     });
   });
 
@@ -267,6 +279,12 @@ void main() {
         bool chamado = false;
         Result<int, String>.success(10).onFailure((_) => chamado = true);
         expect(chamado, isFalse);
+      });
+
+      test('deve permitir chamadas encadeadas (fluent API)', () {
+        final result = Result<int, String>.failure('ops');
+        final returned = result.onFailure((_) {});
+        expect(returned, same(result));
       });
     });
 

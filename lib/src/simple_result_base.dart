@@ -89,16 +89,16 @@ extension ResultExtension<S, F> on Result<S, F> {
 
   /// Executes a side effect function if the result is a failure.
   Result<S, F> onFailure(void Function(F error) effect) {
-    if (isFailure) {
-      effect((this as Failure<S, F>).error);
+    if (this case Failure(error: final e)) {
+      effect(e);
     }
     return this;
   }
 
   /// Executes a side effect function if the result is a success.
   Result<S, F> onSuccess(void Function(S value) effect) {
-    if (isSuccess) {
-      effect((this as Success<S, F>).value);
+    if (this case Success(value: final v)) {
+      effect(v);
     }
     return this;
   }
