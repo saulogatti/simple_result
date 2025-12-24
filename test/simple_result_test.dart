@@ -80,6 +80,16 @@ void main() {
     });
   });
 
+  group('when', () {
+    test('deve se comportar exatamente como fold', () {
+      final result = Result<int, String>.success(10);
+
+      final value = result.when((v) => v * 2, (e) => 0);
+
+      expect(value, equals(20));
+    });
+  });
+
   group('getOrNull', () {
     test('deve retornar valor quando Success', () {
       final result = Result<String, Exception>.success('teste');
@@ -151,6 +161,122 @@ void main() {
 
       expect(result.isFailure, isTrue);
       expect(result.failureOrNull, isA<Exception>());
+    });
+  });
+
+  group('ResultExtension - Operadores Funcionais', () {
+    group('map', () {
+      test('deve transformar o valor em caso de sucesso', () {
+        final result = Result<int, String>.success(10).map((v) => v.toString());
+        expect(result.getOrNull, equals('10'));
+        expect(result, isA<Success<String, String>>());
+      });
+
+      test('deve manter o erro original em caso de falha', () {
+        final result = Result<int, String>.failure('erro').map((v) => v * 2);
+        expect(result.failureOrNull, equals('erro'));
+        expect(result, isA<Failure<int, String>>());
+      });
+    });
+
+    group('mapError', () {
+      test('deve transformar o erro em caso de falha', () {
+        final result = Result<int, int>.failure(404).mapError((e) => 'Erro $e');
+        expect(result.failureOrNull, equals('Erro 404'));
+      });
+
+      test('deve manter o valor original em caso de sucesso', () {
+        final result = Result<int, int>.success(200).mapError((e) => 'Erro $e');
+        expect(result.getOrNull, equals(200));
+      });
+    });
+
+    group('flatMap', () {
+      test('deve encadear transformações que retornam Result', () {
+        final result = Result<int, String>.success(
+          10,
+        ).flatMap((v) => Result<String, String>.success('Valor: $v'));
+        expect(result.getOrNull, equals('Valor: 10'));
+      });
+
+      test('deve propagar falha no encadeamento', () {
+        final result = Result<int, String>.success(
+          10,
+        ).flatMap((v) => Result<String, String>.failure('falhou no step 2'));
+        expect(result.failureOrNull, equals('falhou no step 2'));
+      });
+
+      test('não deve executar mapper se o original for falha', () {
+        final result = Result<int, String>.failure(
+          'erro inicial',
+        ).flatMap((v) => Result.success('não deve ocorrer'));
+        expect(result.failureOrNull, equals('erro inicial'));
+      });
+    });
+
+    group('flatMapError', () {
+      test(
+        'deve permitir recuperar de um erro ou transformar erro em outro Result',
+        () {
+          final result = Result<int, String>.failure(
+            '404',
+          ).flatMapError((e) => Result.failure('Erro formatado: $e'));
+          expect(result.failureOrNull, equals('Erro formatado: 404'));
+        },
+      );
+    });
+  });
+
+  group('ResultExtension - Efeitos Colaterais', () {
+    group('onSuccess', () {
+      test('deve executar o callback apenas em caso de sucesso', () {
+        int? value;
+        final result = Result<int, String>.success(42).onSuccess((v) {
+          value = v;
+        });
+
+        expect(value, equals(42));
+        expect(result, isA<Success<int, String>>());
+      });
+
+      test('não deve executar o callback em caso de falha', () {
+        bool chamado = false;
+        Result<int, String>.failure('erro').onSuccess((_) => chamado = true);
+        expect(chamado, isFalse);
+      });
+
+      test('deve permitir chamadas encadeadas (fluent API)', () {
+        final result = Result<int, String>.success(1);
+        final returned = result.onSuccess((_) {});
+        expect(returned, same(result));
+      });
+    });
+
+    group('onFailure', () {
+      test('deve executar o callback apenas em caso de falha', () {
+        String? error;
+        final result = Result<int, String>.failure('ops').onFailure((e) {
+          error = e;
+        });
+
+        expect(error, equals('ops'));
+        expect(result, isA<Failure<int, String>>());
+      });
+
+      test('não deve executar o callback em caso de sucesso', () {
+        bool chamado = false;
+        Result<int, String>.success(10).onFailure((_) => chamado = true);
+        expect(chamado, isFalse);
+      });
+    });
+
+    test('deve permitir encadear onSuccess e onFailure', () {
+      String status = '';
+      Result<int, String>.success(10)
+          .onSuccess((_) => status += 'sucesso')
+          .onFailure((_) => status += 'falha');
+
+      expect(status, equals('sucesso'));
     });
   });
 

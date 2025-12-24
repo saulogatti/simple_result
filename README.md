@@ -1,5 +1,8 @@
 # Simple Result
 
+[![Pub Version](https://img.shields.io/pub/v/simple_result)](https://pub.dev/packages/simple_result)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Uma implementação leve e type-safe do padrão Result para Dart, perfeita para Clean Architecture e aplicações Flutter.
 
 ## 🎯 Características
@@ -171,13 +174,18 @@ Future<Result<Order, String>> createOrder() async {
 
 ### Construtores
 
-- `Result.success(S value)` - Cria um resultado de sucesso
-- `Result.failure(F error)` - Cria um resultado de falha
+- `Result.success(S value)`: Cria uma instância de `Success`.
+- `Result.failure(F error)`: Cria uma instância de `Failure`.
+
+### Classes (Sealed)
+
+- `Success<S, F>`: Representa um resultado positivo contendo um valor do tipo `S`.
+- `Failure<S, F>`: Representa um resultado negativo contendo um erro do tipo `F`.
 
 ### Propriedades
 
-- `isSuccess: bool` - Verifica se é sucesso
-- `isFailure: bool` - Verifica se é falha
+- `isSuccess: bool`: Retorna `true` se o resultado for `Success`.
+- `isFailure: bool`: Retorna `true` se o resultado for `Failure`.
 - `getOrNull: S?` - Retorna o valor ou null
 - `failureOrNull: F?` - Retorna o erro ou null
 
@@ -193,6 +201,18 @@ Future<Result<Order, String>> createOrder() async {
 3. **Testável**: Facilita testes unitários sem mocks complexos
 4. **Explícito**: Deixa claro quando uma função pode falhar
 5. **Funcional**: Permite composição e transformação de resultados
+
+## 🧪 Testes
+
+A biblioteca é rigorosamente testada para garantir confiabilidade. Para rodar a suíte de testes:
+
+```bash
+# Se estiver usando apenas Dart
+dart test
+
+# Se estiver em um projeto Flutter
+flutter test
+```
 
 ## 📚 Inspiração
 
