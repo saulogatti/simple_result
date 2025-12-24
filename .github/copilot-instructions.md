@@ -168,6 +168,5 @@ Future<Result<User, NetworkException>> getUser(int id) async {
 
 ## Useful Files to Reference
 
-- `example/simple_result_example.dart` - See all use cases in action
 - `test/simple_result_test.dart` - Test patterns and edge cases
 - `README.md` - User-facing documentation

@@ -1,6 +1,3 @@
-typedef OnFailure<F> = void Function(F error);
-typedef OnSuccess<S> = void Function(S value);
-
 final class Failure<S extends Object, F> extends Result<S, F> {
   final F error;
   const Failure(this.error);
@@ -36,12 +33,12 @@ sealed class Result<S extends Object, F> {
   /// O método mágico: obriga a tratar os dois casos.
   /// Ideal para usar nos Widgets/Blocs.
   T fold<T extends Object>({
-    required OnSuccess<S> onSuccess,
-    required OnFailure<F> onFailure,
+    required T Function(S value) onSuccess,
+    required T Function(F error) onFailure,
   }) {
     return switch (this) {
-      Success<S, F>(value: final S v) => onSuccess(v) as T,
-      Failure<S, F>(error: final F e) => onFailure(e) as T,
+      Success<S, F>(value: final S v) => onSuccess(v),
+      Failure<S, F>(error: final F e) => onFailure(e),
     };
   }
 
@@ -78,8 +75,8 @@ extension ResultExtension<S extends Object, F> on Result<S, F> {
     Result<R, F> Function(S value) mapper,
   ) {
     return fold<Result<R, F>>(
-      onSuccess: (S value) => mapper(value),
-      onFailure: (F error) => Result<S, F>.failure(error),
+      onSuccess: mapper,
+      onFailure: (F error) => Result<R, F>.failure(error),
     );
   }
 
