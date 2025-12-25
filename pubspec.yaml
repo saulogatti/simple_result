@@ -1,6 +1,6 @@
 name: simple_result
 description: Uma implementação leve e type-safe do padrão Result para Dart. Perfeita para Clean Architecture e aplicações Flutter, com suporte a sealed classes e pattern matching do Dart 3.
-version: 1.0.2
+version: 1.0.3
 repository: https://github.com/saulogatti/simple_result
 
 environment:
